@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nav Jaap</title>
+    <meta
+      name="description"
+      content="A minimal, calming mantra reading and counting app."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <h1>🕉️ Nav Jaap</h1>
+        <button
+          id="themeToggle"
+          class="icon-btn"
+          type="button"
+          aria-label="Toggle theme"
+          title="Toggle theme"
+        >
+          🌙
+        </button>
+      </header>
+
+      <main id="viewRoot" class="view-root" aria-live="polite">
+        <section id="homeView" class="view active" aria-label="Home screen">
+          <p class="home-subtitle">Choose a mantra and begin your jap with focus.</p>
+          <div id="mantraGrid" class="mantra-grid"></div>
+        </section>
+
+        <section id="mantraView" class="view" aria-hidden="true" aria-label="Mantra screen">
+          <div class="mantra-top-controls">
+            <button id="backBtn" class="pill-btn" type="button" aria-label="Go back">
+              ← Back
+            </button>
+            <button
+              id="languageToggle"
+              class="pill-btn"
+              type="button"
+              aria-label="Toggle language"
+            >
+              हिंदी
+            </button>
+          </div>
+
+          <h2 id="mantraTitle" class="mantra-title"></h2>
+          <div id="mantraText" class="mantra-text"></div>
+        </section>
+      </main>
+    </div>
+
+    <aside id="counterDock" class="counter-dock hidden" aria-label="Counter controls">
+      <div class="count-readout">
+        <span class="count-label">Count</span>
+        <span id="countValue" class="count-value">0</span>
+      </div>
+      <button id="incrementBtn" class="increment-btn" type="button" aria-label="Increment mantra count">
+        Tap to Count +1
+      </button>
+      <button id="resetBtn" class="reset-btn" type="button" aria-label="Reset mantra count">
+        Reset
+      </button>
+    </aside>
+
+    <script src="script.js"></script>
+  </body>
+</html>
