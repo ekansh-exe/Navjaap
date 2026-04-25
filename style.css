@@ -29,12 +29,9 @@
   --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   margin: 0;
   min-height: 100%;
 }
@@ -44,9 +41,9 @@ body {
     "Times New Roman", serif;
   color: var(--text);
   background:
-    radial-gradient(circle at 10% -10%, rgba(179, 106, 46, 0.2), transparent 48%),
-    radial-gradient(circle at 95% 0%, rgba(179, 106, 46, 0.12), transparent 38%),
-    linear-gradient(160deg, var(--bg-main), var(--bg-soft));
+    radial-gradient(circle at 10% 20%, rgba(179, 106, 46, 0.13), transparent 42%),
+    radial-gradient(circle at 90% 10%, rgba(179, 106, 46, 0.08), transparent 35%),
+    var(--bg-main);
   transition: background 220ms ease, color 220ms ease;
 }
 
@@ -56,6 +53,7 @@ body {
   padding: 1rem 0 8.75rem;
 }
 
+/* ─── Header ─── */
 .app-header {
   display: flex;
   align-items: center;
@@ -71,6 +69,13 @@ body {
   letter-spacing: 0.01em;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* button base */
 .icon-btn,
 .pill-btn,
 .reset-btn,
@@ -91,19 +96,11 @@ body {
   font-size: 1.15rem;
   transition: transform 120ms ease, background 200ms ease;
 }
+.icon-btn:active { transform: scale(0.95); }
 
-.icon-btn:active {
-  transform: scale(0.95);
-}
-
-.view-root {
-  position: relative;
-}
-
-.view {
-  display: none;
-}
-
+/* ─── Views ─── */
+.view-root { position: relative; }
+.view { display: none; }
 .view.active {
   display: block;
   animation: fade-slide 240ms ease;
@@ -115,6 +112,13 @@ body {
   font-size: 1.02rem;
 }
 
+/* adding button to toggle language and home screen */
+.home-lang-btn {
+  font-size: 0.88rem;
+  padding: 0.45rem 0.75rem;
+}
+
+/* grid of all the mantra */
 .mantra-grid {
   display: grid;
   gap: 0.75rem;
@@ -136,6 +140,13 @@ body {
   font-weight: 700;
 }
 
+.mantra-card .title-native {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text-soft);
+  margin-top: 0.1rem;
+}
+
 .mantra-card .hint {
   display: block;
   margin-top: 0.35rem;
@@ -149,6 +160,7 @@ body {
   border-color: var(--accent);
 }
 
+/* top control */
 .mantra-top-controls {
   position: sticky;
   top: 0;
@@ -158,8 +170,8 @@ body {
   gap: 0.5rem;
   margin-bottom: 1rem;
   padding: 0.3rem 0;
-  background: linear-gradient(var(--bg-main), rgba(0, 0, 0, 0));
-  backdrop-filter: blur(3px);
+  /* Fix: simpler gradient that doesn't look weird */
+  background: linear-gradient(to bottom, var(--bg-main) 60%, transparent);
 }
 
 .pill-btn {
@@ -169,11 +181,9 @@ body {
   box-shadow: var(--shadow);
   transition: transform 120ms ease, background 200ms ease;
 }
+.pill-btn:active { transform: translateY(1px); }
 
-.pill-btn:active {
-  transform: translateY(1px);
-}
-
+/* ─── Mantra text ─── */
 .mantra-title {
   margin: 0;
   font-size: clamp(1.35rem, 4.7vw, 1.9rem);
@@ -181,18 +191,18 @@ body {
 }
 
 .mantra-text {
-  margin-top: 1.5rem;
-  padding-bottom: 18rem; /* Extended padding so the last line can reach the center of the screen */
+  margin-top: 0.9rem;
+  padding-bottom: 10.25rem;
   scroll-behavior: smooth;
 }
 
-/*groouping sentences together */
+/* ─── Line groups ─── */
 .mantra-line-group {
   margin: 0 0 2rem;
   padding: 0 0.5rem;
   text-align: center;
-  opacity: 0.4;
-  transition: all 0.35s ease;
+  opacity: 0.35;
+  transition: opacity 0.35s ease, transform 0.35s ease, color 0.35s ease;
   transform: scale(0.98);
 }
 
@@ -208,6 +218,12 @@ body {
   color: var(--accent);
 }
 
+/* end of chalishha*/
+.mantra-end-sentinel {
+  height: 1px;
+}
+
+/* counter  */
 .counter-dock {
   position: fixed;
   left: 50%;
@@ -272,28 +288,192 @@ body {
   filter: brightness(0.95);
 }
 
+/* reset and auto toggle button css*/
+.reset-auto-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .reset-btn {
   border-radius: var(--radius-sm);
   background: var(--surface);
   padding: 0.65rem 0.85rem;
   min-height: 2.8rem;
+  flex: 1;
 }
 
-@keyframes fade-slide {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* auto increment */
+.auto-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
 }
+
+.auto-toggle-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.auto-toggle-track {
+  position: relative;
+  width: 2.6rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  transition: background 200ms ease;
+  flex-shrink: 0;
+}
+
+.auto-toggle-thumb {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  transform: translateY(-50%);
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  background: var(--text-soft);
+  transition: transform 200ms ease, background 200ms ease, left 200ms ease;
+}
+
+.auto-toggle-label input:checked + .auto-toggle-track {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.auto-toggle-label input:checked + .auto-toggle-track .auto-toggle-thumb {
+  left: calc(100% - 1.05rem - 3px);
+  background: #fff;
+}
+
+.auto-toggle-text {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+/*scroll to top */
+.scroll-top-btn {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 7rem;
+  z-index: 4;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--accent);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 250ms ease, transform 250ms ease;
+  animation: bounce-in 0.35s ease;
+}
+
+.scroll-top-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+}
+
+@keyframes bounce-in {
+  0%   { transform: translateY(12px); opacity: 0; }
+  70%  { transform: translateY(-4px); }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+
+/* css alert*/
+.alert-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.alert-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.alert-box {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.25);
+  padding: 1.75rem 1.5rem 1.25rem;
+  width: min(340px, calc(100% - 2.5rem));
+  transform: translateY(14px) scale(0.97);
+  transition: transform 180ms ease;
+  text-align: center;
+}
+
+.alert-overlay.visible .alert-box {
+  transform: translateY(0) scale(1);
+}
+
+.alert-message {
+  margin: 0 0 1.25rem;
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.alert-actions {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.alert-btn {
+  flex: 1;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.5rem;
+  font: inherit;
+  font-size: 0.97rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: transform 110ms ease, filter 110ms ease;
+}
+.alert-btn:active { transform: scale(0.97); filter: brightness(0.93); }
+
+.alert-cancel {
+  background: var(--surface);
+  color: var(--text-soft);
+}
+
+.alert-confirm {
+  background: #c0392b;
+  color: #fff;
+  border-color: #a93226;
+}
+
+/* animaton*/
+@keyframes fade-slide {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 
 @media (min-width: 700px) {
-  .app-shell {
-    padding-top: 1.25rem;
-  }
+  .app-shell { padding-top: 1.25rem; }
 
   .mantra-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -311,34 +491,15 @@ body {
     padding-inline: 0.3rem;
   }
 
-  .increment-btn {
-    min-height: 3.4rem;
+  .increment-btn { min-height: 3.4rem; }
+
+  .reset-auto-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
   }
 
   .reset-btn {
-    min-width: 8.5rem;
-    min-height: 3.4rem;
+    min-height: 2.2rem;
   }
-}
-
-.mantra-text {
-  margin-top: 0.9rem;
-  padding-bottom: 10.25rem;
-
-  scroll-behavior: smooth;
-}
-
-.mantra-line {
-  margin: 0 0 1rem;
-  line-height: 1.9;
-  font-size: clamp(1.1rem, 3.8vw, 1.35rem);
-
-  opacity: 0.5;
-  transition: all 0.25s ease;
-}
-
-.mantra-line.active {
-  opacity: 1;
-  transform: scale(1.02);
-  color: var(--accent);
 }
