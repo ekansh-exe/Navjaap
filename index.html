@@ -4,25 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nav Jaap</title>
-    <meta
-      name="description"
-      content="A minimal, calming mantra reading and counting app."
-    />
+    <meta name="description" content="A minimal, calming mantra reading and counting app." />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="app-shell">
       <header class="app-header">
         <h1>🕉️ Nav Jaap</h1>
-        <button
-          id="themeToggle"
-          class="icon-btn"
-          type="button"
-          aria-label="Toggle theme"
-          title="Toggle theme"
-        >
-          🌙
-        </button>
+        <div class="header-actions">
+          <button id="homeLanguageToggle" class="pill-btn home-lang-btn" type="button" aria-label="Toggle home language">
+            हिंदी
+          </button>
+          <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
+            🌙
+          </button>
+        </div>
       </header>
 
       <main id="viewRoot" class="view-root" aria-live="polite">
@@ -33,24 +29,28 @@
 
         <section id="mantraView" class="view" aria-hidden="true" aria-label="Mantra screen">
           <div class="mantra-top-controls">
-            <button id="backBtn" class="pill-btn" type="button" aria-label="Go back">
-              ← Back
-            </button>
-            <button
-              id="languageToggle"
-              class="pill-btn"
-              type="button"
-              aria-label="Toggle language"
-            >
-              हिंदी
-            </button>
+            <button id="backBtn" class="pill-btn" type="button" aria-label="Go back">← Back</button>
+            <button id="languageToggle" class="pill-btn" type="button" aria-label="Toggle language">Hinglish</button>
           </div>
-
           <h2 id="mantraTitle" class="mantra-title"></h2>
           <div id="mantraText" class="mantra-text"></div>
         </section>
       </main>
     </div>
+
+    <!-- css alert -->
+    <div id="alertOverlay" class="alert-overlay" role="dialog" aria-modal="true" aria-labelledby="alertMessage">
+      <div class="alert-box">
+        <p id="alertMessage" class="alert-message">Reset this mantra count?</p>
+        <div class="alert-actions">
+          <button id="alertCancel" class="alert-btn alert-cancel" type="button">Cancel</button>
+          <button id="alertConfirm" class="alert-btn alert-confirm" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll to top arrow -->
+    <button id="scrollTopBtn" class="scroll-top-btn hidden" type="button" aria-label="Scroll to top">↑</button>
 
     <aside id="counterDock" class="counter-dock hidden" aria-label="Counter controls">
       <div class="count-readout">
@@ -60,9 +60,14 @@
       <button id="incrementBtn" class="increment-btn" type="button" aria-label="Increment mantra count">
         Tap to Count +1
       </button>
-      <button id="resetBtn" class="reset-btn" type="button" aria-label="Reset mantra count">
-        Reset
-      </button>
+      <div class="reset-auto-row">
+        <button id="resetBtn" class="reset-btn" type="button" aria-label="Reset mantra count">Reset</button>
+        <label class="auto-toggle-label" title="Auto-increment when reaching the end">
+          <input type="checkbox" id="autoIncrementToggle" checked />
+          <span class="auto-toggle-track"><span class="auto-toggle-thumb"></span></span>
+          <span class="auto-toggle-text">Auto +1</span>
+        </label>
+      </div>
     </aside>
 
     <script src="script.js"></script>
