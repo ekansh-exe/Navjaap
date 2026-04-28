@@ -30,7 +30,25 @@
         <section id="mantraView" class="view" aria-hidden="true" aria-label="Mantra screen">
           <div class="mantra-top-controls">
             <button id="backBtn" class="pill-btn" type="button" aria-label="Go back">← Back</button>
-            <button id="languageToggle" class="pill-btn" type="button" aria-label="Toggle language">Hinglish</button>
+            <div class="mantra-control-group">
+              <div class="mantra-top-buttons">
+                <button id="languageToggle" class="pill-btn" type="button" aria-label="Toggle language">Hinglish</button>
+                <button id="autoScrollToggle" class="pill-btn auto-scroll-btn" type="button" aria-label="Toggle auto scroll">Auto Scroll</button>
+              </div>
+              <div id="autoScrollPanel" class="auto-scroll-panel hidden" aria-label="Auto scroll speed selector">
+                <div class="auto-scroll-panel-head">
+                  <span id="autoScrollPanelLabel" class="auto-scroll-panel-label">Auto Scroll Speed</span>
+                  <span id="autoScrollPanelValue" class="auto-scroll-panel-value">Medium</span>
+                </div>
+                <input id="autoScrollRange" class="auto-scroll-range" type="range" min="0" max="3" step="1" value="1" aria-label="Auto scroll speed" />
+                <div class="auto-scroll-scale" aria-hidden="true">
+                  <span id="autoScrollScaleSlow">Slow</span>
+                  <span id="autoScrollScaleMedium">Medium</span>
+                  <span id="autoScrollScaleHigh">High</span>
+                  <span id="autoScrollScaleVeryFast">Very Fast</span>
+                </div>
+              </div>
+            </div>
           </div>
           <h2 id="mantraTitle" class="mantra-title"></h2>
           <div id="mantraText" class="mantra-text"></div>
