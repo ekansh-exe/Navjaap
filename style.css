@@ -183,6 +183,174 @@ body {
 }
 .pill-btn:active { transform: translateY(1px); }
 
+.mantra-control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+}
+
+.mantra-top-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auto-scroll-btn.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--surface) 70%, var(--accent) 30%);
+}
+
+.auto-scroll-panel {
+  width: min(19rem, calc(100vw - 3rem));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  padding: 0.8rem 0.85rem 0.75rem;
+}
+
+.auto-scroll-panel.hidden {
+  display: none;
+}
+
+.auto-scroll-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.auto-scroll-panel-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.auto-scroll-panel-value {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+
+.auto-scroll-range {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.auto-scroll-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.38rem;
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 820px) {
+  .app-shell {
+    width: min(100% - 1rem, 920px);
+    padding-top: 0.85rem;
+  }
+
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .mantra-top-controls {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .mantra-control-group {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .mantra-top-buttons {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .auto-scroll-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    width: min(100% - 0.75rem, 920px);
+    padding-bottom: 9.5rem;
+  }
+
+  .app-header h1 {
+    font-size: clamp(1.2rem, 8vw, 1.65rem);
+  }
+
+  .header-actions {
+    gap: 0.4rem;
+  }
+
+  .pill-btn {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .home-subtitle {
+    font-size: 0.98rem;
+  }
+
+  .mantra-top-controls {
+    gap: 0.45rem;
+  }
+
+  .mantra-title {
+    font-size: clamp(1.2rem, 6vw, 1.6rem);
+  }
+
+  .mantra-text {
+    padding-bottom: 9.5rem;
+  }
+
+  .mantra-line-group {
+    padding: 0;
+  }
+
+  .mantra-line-group p {
+    font-size: clamp(1rem, 4.2vw, 1.2rem);
+    line-height: 1.55;
+  }
+
+  .counter-dock {
+    width: min(100% - 0.5rem, 920px);
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .reset-auto-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .auto-toggle-label {
+    justify-content: center;
+  }
+
+  .scroll-top-btn {
+    right: 0.75rem;
+    bottom: 7.4rem;
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+}
+
 /* ─── Mantra text ─── */
 .mantra-title {
   margin: 0;
