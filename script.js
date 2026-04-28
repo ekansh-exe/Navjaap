@@ -3,7 +3,69 @@ const STORAGE_KEYS = {
   language: "navjaap_language",
   homeLanguage: "navjaap_home_language",
   counters: "navjaap_counters",
-  autoIncrement: "navjaap_auto_increment"
+  autoIncrement: "navjaap_auto_increment",
+  autoScrollSpeed: "navjaap_auto_scroll_speed"
+};
+
+const AUTO_SCROLL_SPEEDS = ["slow", "medium", "high", "very-fast"];
+const AUTO_SCROLL_VELOCITY = {
+  slow: 24,
+  medium: 48,
+  high: 84,
+  "very-fast": 128
+};
+
+const UI_TEXT = {
+  hinglish: {
+    back: "← Back",
+    languageToggle: "Hindi",
+    autoScroll: "Auto Scroll",
+    pauseAutoScroll: "Pause Auto",
+    autoScrollLabel: "Auto Scroll Speed",
+    autoScrollValues: {
+      slow: "Slow",
+      medium: "Medium",
+      high: "High",
+      "very-fast": "Very Fast"
+    },
+    homeSubtitle: "Choose a mantra and begin your jap with focus.",
+    count: "Count",
+    increment: "Tap to Count +1",
+    reset: "Reset",
+    autoIncrement: "Auto +1",
+    resetPrompt: "Reset this mantra count?",
+    cancel: "Cancel",
+    confirmReset: "Reset",
+    openMantra: "Open",
+    tapToOpen: "Tap to open",
+    languageButton: "हिंदी",
+    homeLanguageButton: "Roman"
+  },
+  hindi: {
+    back: "← वापस",
+    languageToggle: "हिंग्लिश",
+    autoScroll: "ऑटो स्क्रॉल",
+    pauseAutoScroll: "रोकें",
+    autoScrollLabel: "ऑटो स्क्रॉल गति",
+    autoScrollValues: {
+      slow: "धीमी",
+      medium: "मध्यम",
+      high: "तेज़",
+      "very-fast": "बहुत तेज़"
+    },
+    homeSubtitle: "एक मंत्र चुनें और ध्यान से जाप शुरू करें।",
+    count: "गिनती",
+    increment: "गिनती +1",
+    reset: "रीसेट",
+    autoIncrement: "ऑटो +1",
+    resetPrompt: "क्या इस मंत्र की गिनती रीसेट करें?",
+    cancel: "रद्द करें",
+    confirmReset: "रीसेट",
+    openMantra: "खोलें",
+    tapToOpen: "खोलने के लिए टैप करें",
+    languageButton: "हिंदी",
+    homeLanguageButton: "Roman"
+  }
 };
 
 // adding hindi titles for the homescreen
@@ -177,6 +239,15 @@ const themeToggle        = document.getElementById("themeToggle");
 const languageToggle     = document.getElementById("languageToggle");
 const homeLanguageToggle = document.getElementById("homeLanguageToggle");
 const backBtn            = document.getElementById("backBtn");
+const autoScrollToggle   = document.getElementById("autoScrollToggle");
+const autoScrollPanel    = document.getElementById("autoScrollPanel");
+const autoScrollPanelLabel = document.getElementById("autoScrollPanelLabel");
+const autoScrollPanelValue = document.getElementById("autoScrollPanelValue");
+const autoScrollRange    = document.getElementById("autoScrollRange");
+const autoScrollScaleSlow = document.getElementById("autoScrollScaleSlow");
+const autoScrollScaleMedium = document.getElementById("autoScrollScaleMedium");
+const autoScrollScaleHigh = document.getElementById("autoScrollScaleHigh");
+const autoScrollScaleVeryFast = document.getElementById("autoScrollScaleVeryFast");
 
 const counterDock        = document.getElementById("counterDock");
 const countValue         = document.getElementById("countValue");
@@ -199,27 +270,34 @@ let homeLanguage    = getStoredHomeLanguage();   // home card lang: roman | hind
 let counters        = getStoredCounters();
 let theme           = getInitialTheme();
 let autoIncrement   = getStoredAutoIncrement();
+let autoScrollSpeed  = getStoredAutoScrollSpeed();
+let autoScrollActive = false;
 
 let lineElements    = [];
 let scrollObserver  = null;
 let endObserver     = null;
 let alertCallback   = null;
 let endObserverReady = false;
+let autoScrollFrameId = null;
 
 
 initialize();
 
 function initialize() {
   applyTheme(theme);
-  setLanguageUI();
+  syncLocalizedUI();
   setHomeLanguageUI();
   autoIncrementToggle.checked = autoIncrement;
+  autoScrollRange.value = speedToIndex(autoScrollSpeed);
+  setAutoScrollPanelVisible(false);
   renderHome();
 
   themeToggle.addEventListener("click", onThemeToggle);
   languageToggle.addEventListener("click", onLanguageToggle);
   homeLanguageToggle.addEventListener("click", onHomeLanguageToggle);
   backBtn.addEventListener("click", goHome);
+  autoScrollToggle.addEventListener("click", onAutoScrollToggle);
+  autoScrollRange.addEventListener("input", onAutoScrollSpeedChange);
   incrementBtn.addEventListener("click", incrementCounter);
   resetBtn.addEventListener("click", showResetAlert);
   autoIncrementToggle.addEventListener("change", () => {
@@ -248,11 +326,14 @@ function initialize() {
 function renderHome() {
   mantraGrid.innerHTML = "";
 
+  const ui = getUIStrings();
+  homeView.querySelector(".home-subtitle").textContent = ui.homeSubtitle;
+
   Object.entries(mantras).forEach(([id, mantra]) => {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "mantra-card";
-    card.setAttribute("aria-label", `Open ${mantra.title}`);
+    card.setAttribute("aria-label", `${ui.openMantra} ${mantra.title}`);
 
     const nativeTitle = mantraNativeTitles[id] || mantra.title;
     const showHindi   = homeLanguage === "hindi";
@@ -260,7 +341,7 @@ function renderHome() {
     card.innerHTML = `
       <span class="title">${showHindi ? nativeTitle : mantra.title}</span>
       ${showHindi ? `<span class="title-native">${mantra.title}</span>` : ""}
-      <span class="hint">Tap to open</span>
+      <span class="hint">${ui.tapToOpen}</span>
     `;
     card.addEventListener("click", () => openMantra(id));
     mantraGrid.appendChild(card);
@@ -274,6 +355,12 @@ function openMantra(id) {
   renderMantra();
   updateCounterUI();
   counterDock.classList.remove("hidden");
+  if (autoScrollActive) {
+    startAutoScrollLoop();
+  } else {
+    setAutoScrollPanelVisible(false);
+    updateAutoScrollButton();
+  }
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
@@ -281,6 +368,8 @@ function goHome() {
   currentMantraId = null;
   counterDock.classList.add("hidden");
   scrollTopBtn.classList.add("hidden");
+  stopAutoScrollLoop();
+  setAutoScrollPanelVisible(false);
   showView("home");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -299,6 +388,7 @@ function renderMantra() {
 
   const mantra = mantras[currentMantraId];
   const lines  = mantra[language];
+  const ui = getUIStrings();
 
   mantraTitle.textContent = mantra.title;
   mantraText.innerHTML    = "";
@@ -395,6 +485,9 @@ function renderMantra() {
         if (autoIncrement && endObserverReady) {
           incrementCounter();
         }
+        if (autoScrollActive) {
+          stopAutoScrollLoop();
+        }
       } else {
         scrollTopBtn.classList.add("hidden");
       }
@@ -408,6 +501,11 @@ function renderMantra() {
   endObserverReady = false;
 endObserver.observe(sentinel);
 setTimeout(() => { endObserverReady = true; }, 600);
+
+  autoScrollPanelLabel.textContent = ui.autoScrollLabel;
+  autoScrollPanelValue.textContent = ui.autoScrollValues[autoScrollSpeed];
+  autoScrollRange.value = String(speedToIndex(autoScrollSpeed));
+  updateAutoScrollButton();
 }
 
 
@@ -439,7 +537,7 @@ function hideAlert() {
 
 function showResetAlert() {
   if (!currentMantraId) return;
-  showAlert("Reset this mantra count?", () => {
+  showAlert(getUIStrings().resetPrompt, () => {
     counters[currentMantraId] = 0;
 persistCounters();
 updateCounterUI();
@@ -465,12 +563,34 @@ function applyTheme(mode) {
 function onLanguageToggle() {
   language = language === "hindi" ? "hinglish" : "hindi";
   localStorage.setItem(STORAGE_KEYS.language, language);
-  setLanguageUI();
+  syncLocalizedUI();
   if (currentMantraId) renderMantra();
+  renderHome();
 }
 
-function setLanguageUI() {
-  languageToggle.textContent = language === "hindi" ? "Hinglish" : "हिंदी";
+function syncLocalizedUI() {
+  const ui = getUIStrings();
+  backBtn.textContent = ui.back;
+  languageToggle.textContent = ui.languageToggle;
+  languageToggle.setAttribute("aria-label", ui.languageToggle);
+  autoScrollToggle.textContent = autoScrollActive ? ui.pauseAutoScroll : ui.autoScroll;
+  autoScrollToggle.setAttribute("aria-label", autoScrollActive ? ui.pauseAutoScroll : ui.autoScroll);
+  document.querySelector(".home-subtitle").textContent = ui.homeSubtitle;
+  countValue.previousElementSibling.textContent = ui.count;
+  incrementBtn.textContent = ui.increment;
+  resetBtn.textContent = ui.reset;
+  autoIncrementToggle.nextElementSibling.nextElementSibling.textContent = ui.autoIncrement;
+  document.getElementById("alertMessage").textContent = ui.resetPrompt;
+  alertCancel.textContent = ui.cancel;
+  alertConfirm.textContent = ui.confirmReset;
+  autoScrollPanelLabel.textContent = ui.autoScrollLabel;
+  autoScrollPanelValue.textContent = ui.autoScrollValues[autoScrollSpeed];
+  autoScrollScaleSlow.textContent = ui.autoScrollValues.slow;
+  autoScrollScaleMedium.textContent = ui.autoScrollValues.medium;
+  autoScrollScaleHigh.textContent = ui.autoScrollValues.high;
+  autoScrollScaleVeryFast.textContent = ui.autoScrollValues["very-fast"];
+  autoScrollRange.setAttribute("aria-label", ui.autoScrollLabel);
+  autoScrollRange.value = String(speedToIndex(autoScrollSpeed));
 }
 
 //home lang
@@ -483,6 +603,115 @@ function onHomeLanguageToggle() {
 
 function setHomeLanguageUI() {
   homeLanguageToggle.textContent = homeLanguage === "roman" ? "हिंदी" : "Roman";
+}
+
+function onAutoScrollToggle() {
+  if (currentMantraId === null) return;
+
+  if (autoScrollActive) {
+    stopAutoScrollLoop();
+    setAutoScrollPanelVisible(true);
+    updateAutoScrollButton();
+    return;
+  }
+
+  setAutoScrollPanelVisible(true);
+  startAutoScrollLoop();
+}
+
+function onAutoScrollSpeedChange() {
+  const index = Number(autoScrollRange.value);
+  const speed = AUTO_SCROLL_SPEEDS[index] || "medium";
+  setAutoScrollSpeed(speed, true);
+}
+
+function setAutoScrollSpeed(speed, persist = false) {
+  if (!AUTO_SCROLL_SPEEDS.includes(speed)) return;
+
+  autoScrollSpeed = speed;
+  if (persist) {
+    localStorage.setItem(STORAGE_KEYS.autoScrollSpeed, speed);
+  }
+  autoScrollPanelValue.textContent = getUIStrings().autoScrollValues[speed];
+  autoScrollRange.value = String(speedToIndex(speed));
+
+  if (autoScrollActive) {
+    startAutoScrollLoop();
+  }
+}
+
+function setAutoScrollPanelVisible(visible) {
+  autoScrollPanel.classList.toggle("hidden", !visible);
+}
+
+function updateAutoScrollButton() {
+  const ui = getUIStrings();
+  autoScrollToggle.classList.toggle("is-active", autoScrollActive);
+  autoScrollToggle.textContent = autoScrollActive ? ui.pauseAutoScroll : ui.autoScroll;
+  autoScrollToggle.setAttribute("aria-label", autoScrollActive ? ui.pauseAutoScroll : ui.autoScroll);
+}
+
+function startAutoScrollLoop() {
+  if (!currentMantraId) return;
+
+  autoScrollActive = true;
+  updateAutoScrollButton();
+  localStorage.setItem(STORAGE_KEYS.autoScrollSpeed, autoScrollSpeed);
+
+  if (autoScrollFrameId !== null) {
+    cancelAnimationFrame(autoScrollFrameId);
+    autoScrollFrameId = null;
+  }
+
+  let lastTimestamp = null;
+
+  const tick = (timestamp) => {
+    if (!autoScrollActive || currentMantraId === null) {
+      autoScrollFrameId = null;
+      return;
+    }
+
+    if (lastTimestamp === null) {
+      lastTimestamp = timestamp;
+      autoScrollFrameId = requestAnimationFrame(tick);
+      return;
+    }
+
+    const deltaSeconds = (timestamp - lastTimestamp) / 1000;
+    lastTimestamp = timestamp;
+
+    const viewportHeight = window.innerHeight;
+    const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
+    const currentScrollTop = window.scrollY;
+
+    if (currentScrollTop >= maxScrollTop - 1) {
+      stopAutoScrollLoop();
+      return;
+    }
+
+    const nextScrollTop = Math.min(maxScrollTop, currentScrollTop + AUTO_SCROLL_VELOCITY[autoScrollSpeed] * deltaSeconds);
+    window.scrollTo({ top: nextScrollTop, behavior: "auto" });
+    autoScrollFrameId = requestAnimationFrame(tick);
+  };
+
+  autoScrollFrameId = requestAnimationFrame(tick);
+}
+
+function stopAutoScrollLoop() {
+  autoScrollActive = false;
+  updateAutoScrollButton();
+  if (autoScrollFrameId !== null) {
+    cancelAnimationFrame(autoScrollFrameId);
+    autoScrollFrameId = null;
+  }
+}
+
+function speedToIndex(speed) {
+  return Math.max(0, AUTO_SCROLL_SPEEDS.indexOf(speed));
+}
+
+function getUIStrings() {
+  return language === "hindi" ? UI_TEXT.hindi : UI_TEXT.hinglish;
 }
 
 
@@ -505,6 +734,11 @@ function getStoredHomeLanguage() {
 function getStoredAutoIncrement() {
   const saved = localStorage.getItem(STORAGE_KEYS.autoIncrement);
   return saved === null ? true : saved === "true";
+}
+
+function getStoredAutoScrollSpeed() {
+  const saved = localStorage.getItem(STORAGE_KEYS.autoScrollSpeed);
+  return AUTO_SCROLL_SPEEDS.includes(saved) ? saved : "medium";
 }
 
 function getStoredCounters() {
