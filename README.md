@@ -7,10 +7,12 @@ I built this as a simple, normal project for my mother. Like many people, she so
 
 ## Features
 * **Jaap Counter:** A dedicated, easy-to-tap counter to track your progress.
+* **Auto Counter:** Count increases itself when you reach towards the end.
 * **Dual Language Support:** Read mantras in both Hindi and Hinglish.
 * **Traditional Formatting:** Mantras are formatted beautifully in traditional two-line pairs.
 * **Smart Highlighting:** The active line highlights automatically as you naturally scroll down the screen.
 * **Light/Dark Mode:** For comfortable reading at any time of day.
+* **Auto Scroll Mode:** Four level of auto-scrolling speed, so that you can keep your hands off from the screen.
 
 ## Contributing
 Want to add a new Jaap or Mantra to the app? Contributions are very welcome! 
